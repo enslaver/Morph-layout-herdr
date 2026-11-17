@@ -1,5 +1,5 @@
 // The Asks panel: every decision an agent in the shown space is waiting on, as a card you
-// answer from here. Detection lives in mods/tabs-asks (always shown); this mod shows the
+// answer from here. Detection lives in mods/tabs-prompts (always shown); this mod shows the
 // shared state and delivers answers with hc.
 import { View, div, svg, image } from "gpui-kit";
 import { v_flex, h_flex, InputState, Input } from "gpui-base";
@@ -56,7 +56,7 @@ export default class Asks extends View {
     cx.timer.every(5000, (cx) => fillPrompts(cx));
     fillPrompts(cx);
     // The newest prompts typed to the Claude Code agents in the shown space (all spaces in All mode):
-    // the last `prompts` from asks.json (default 10), newest first, for the Answered tree.
+    // the last `morph.prompts` from settings.json (default 10), newest first, for the Answered tree.
     this.recent = [];
     const refreshPrompts = (cx) => {
       const space = spaces().find((s) => s.active), spaceId = space?.id ?? focused()?.space;
@@ -87,7 +87,7 @@ export default class Asks extends View {
 
   set(id, patch) { update((s) => { const a = s.asks.find((x) => x.id === id); if (a) Object.assign(a, patch); }); }
 
-  // With `debug: true` in asks.json, delivery steps go to ~/.config/herdr-app/asks.log too.
+  // With `morph.debug: true` in settings.json, delivery steps go to ~/.config/herdr-app/asks.log too.
   debug(line) {
     if (!this.config?.debug) return;
     exec("sh", ["-c", 'printf "%s %s\n" "$(date +%H:%M:%S)" "$1" >> "$2"', "asks", String(line).slice(0, 600), `${appHome()}/asks.log`]).catch(() => {});

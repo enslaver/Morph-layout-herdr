@@ -1,5 +1,5 @@
 // Shared state and helpers for the Asks mods. The same file lives in mods/asks/ and
-// mods/tabs-asks/ (mods import only their own folder). Keep both copies identical.
+// mods/tabs-prompts/ (mods import only their own folder). Keep both copies identical.
 import { shared, setShared, readTextFile, appHome, terminals, agents, exec, home } from "herdr";
 
 export const KEY = "asks.state";
@@ -130,8 +130,8 @@ export function update(fn) {
 
 export async function loadConfig() {
   try {
-    const text = await readTextFile(`${appHome()}/asks.json`);
-    return text ? { ...DEFAULTS, ...JSON.parse(text) } : { ...DEFAULTS };
+    const text = await readTextFile(`${appHome()}/settings.json`);
+    return text ? { ...DEFAULTS, ...(JSON.parse(text)?.morph ?? {}) } : { ...DEFAULTS };
   } catch { return { ...DEFAULTS }; }
 }
 

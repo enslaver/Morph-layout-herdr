@@ -120,12 +120,12 @@ export class Engine {
     if (this.config) this.started = true;
     for (const a of healed) logAnswer(a, this.config, a.answered_at, "picked up late");
     for (const t of toCheck) this.checkTurn(t, list.find((x) => x.address === t.address) ?? null, cx);
-    for (const ask of stopped) if (this.config?.toast && focused()?.terminal !== ask.address) notify({ title: `${ask.agent} stopped`, body: ask.question, level: "warning", timeout: 5000, action: { name: "tabs-asks.open" } });
+    for (const ask of stopped) if (this.config?.toast && focused()?.terminal !== ask.address) notify({ title: `${ask.agent} stopped`, body: ask.question, level: "warning", timeout: 5000, action: { name: "tabs-prompts.open" } });
     for (const ask of fresh) {
       if (ask.kind !== "STOPPED") this.enrich(ask.id, cx);
       if (this.config?.toast !== false && !this.notified.has(ask.id) && focused()?.terminal !== ask.address) {
         this.notified.add(ask.id);
-        notify({ title: `${ask.agent} is asking`, body: ask.question || "needs your input", level: "warning", timeout: 5000, action: { name: "tabs-asks.open" } });
+        notify({ title: `${ask.agent} is asking`, body: ask.question || "needs your input", level: "warning", timeout: 5000, action: { name: "tabs-prompts.open" } });
       }
     }
   }
@@ -186,13 +186,13 @@ export class Engine {
     });
   }
 
-  // With `debug: true` in asks.json, one line per step goes to ~/.config/herdr-app/asks.log.
+  // With `morph.debug: true` in settings.json, one line per step goes to ~/.config/herdr-app/asks.log.
   debug(line) {
     if (!this.config?.debug) return;
     exec("sh", ["-c", 'printf "%s %s\n" "$(date +%H:%M:%S)" "$1" >> "$2"', "asks", String(line).slice(0, 600), `${appHome()}/asks.log`]).catch(() => {});
   }
 
-  // `tabs-asks.recheck`: forget the finished-turn checks for every live agent's current
+  // `tabs-prompts.recheck`: forget the finished-turn checks for every live agent's current
   // turn, so the next tick reads those turns again (after a rule change, or a miss).
   recheck() {
     const live = terminals().filter((t) => t.state === "live");
@@ -236,7 +236,7 @@ export class Engine {
         };
         let added = false;
         update((s) => { if (!s.asks.some((a) => a.id === key)) { s.asks.unshift(ask); added = true; } });
-        if (added && this.config?.toast && focused()?.terminal !== t.address) notify({ title: `${ask.agent} is asking`, body: ask.question, level: "warning", timeout: 5000, action: { name: "tabs-asks.open" } });
+        if (added && this.config?.toast && focused()?.terminal !== t.address) notify({ title: `${ask.agent} is asking`, body: ask.question, level: "warning", timeout: 5000, action: { name: "tabs-prompts.open" } });
       } catch {}
       finally { this.checking.delete(key); cx.notify(); }
     });
@@ -275,7 +275,7 @@ export class Engine {
     } catch (e) { this.debug(`${backend} threw: ${e?.message ?? e}`); return null; }
   }
 
-  // Which CLI runs the classifier: `classifier` in asks.json (`claude` or `codex`), or `auto`:
+  // Which CLI runs the classifier: `morph.classifier` in settings.json (`claude` or `codex`), or `auto`:
   // claude when installed, else codex, else nothing (and a one-time notice asking for an issue
   // so another agent's CLI can be added). Looked up once; reset when the config is reloaded.
   async backend() {

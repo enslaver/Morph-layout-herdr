@@ -1,8 +1,8 @@
 {
   "layout:Morph-layout-herdr": {
-    "cmd-shift-a": "tabs-asks.toggle"
+    "cmd-shift-a": "tabs-prompts.toggle"
   },
   "global": {
-    "cmd-shift-a": "tabs-asks.toggle"
+    "cmd-shift-a": "tabs-prompts.toggle"
   }
 }

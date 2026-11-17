@@ -1,8 +1,8 @@
 // Clone of the shipped spaces mod (herdr-agent-ask): each space row also shows how many
-// asks its agents are waiting on, from the asks.state shared by mods/tabs-asks.
+// asks its agents are waiting on, from the asks.state shared by mods/tabs-prompts.
 // Workspace spaces: stable colored avatars, worktrees under their checkout,
 // grouped by machine when more than one is known (`group_spaces_by_machine: false` in
-// asks.json: one flat list, where a space on another machine ends its row with that
+// settings.json: one flat list, where a space on another machine ends its row with that
 // machine's name, dim, unless `show_machine_names: false`). After a space's name, the repo
 // its first terminal is in now, only where unusual: branch, ahead/behind. Agent state lives in the agents list, not here. Click to
 // switch, right-click for its menu, drag to reorder.
@@ -32,7 +32,7 @@ function place(s, ps) {
 const rowHeight = ({ tree }) => (tree ? 28 : 30);
 const where = (s, ps) => JSON.stringify([s.machine ?? null, place(s, ps)]);
 const base = (path) => path.replace(/\/+$/, "").split("/").pop();
-// Asks waiting in a space (see mods/tabs-asks/state.js for the shape).
+// Asks waiting in a space (see mods/tabs-prompts/state.js for the shape).
 function waiting(spaceId) {
   const st = shared("asks.state");
   if (!st || !Array.isArray(st.asks)) return 0;
@@ -78,7 +78,7 @@ export default class Spaces extends View {
     this.folded = new Set(JSON.parse(localStorage.getItem("machines.folded") ?? "[]"));
     this.refreshMachines(cx);
     cx.timer.every(15000, cx => this.refreshMachines(cx));
-    // asks.json: `group_spaces_by_machine: false` gives one flat list, no header per machine;
+    // settings.json: `group_spaces_by_machine: false` gives one flat list, no header per machine;
     // there `show_machine_names: false` also leaves the machine's name off a space's row.
     // Read again every 30 s, like the other two mods' config.
     this.group = true;
@@ -87,8 +87,8 @@ export default class Spaces extends View {
       const was = [this.group, this.names];
       let cfg = {};
       try {
-        const text = await readTextFile(`${appHome()}/asks.json`);
-        cfg = (text ? JSON.parse(text) : null) ?? {};
+        const text = await readTextFile(`${appHome()}/settings.json`);
+        cfg = (text ? JSON.parse(text)?.morph : null) ?? {};
       } catch {}
       this.group = cfg.group_spaces_by_machine !== false;
       this.names = cfg.show_machine_names !== false;
@@ -325,7 +325,7 @@ export default class Spaces extends View {
   }
 
   // The rows, under a header per machine once one isn't this computer, unless
-  // asks.json turns grouping off.
+  // settings.json turns grouping off.
   grouped(t, collapsed) {
     const rows = this.ordered();
     const draw = (r) => (collapsed ? this.compact(r, t) : this.row(r, t));
