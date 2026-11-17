@@ -108,8 +108,11 @@ export default class AgentBar extends View {
           if (data && (data.agent === "pi") !== (kind === "pi")) data = null;
         }
         const cwd = data?.workspace?.current_dir ?? data?.cwd ?? target.cwd;
-        let git = null;
-        if (cwd) {
+        // git walks the tree: again only for a new folder or terminal, or every 6 s.
+        let git = this.git;
+        if (cwd && (!git || cwd !== this.gitCwd || Date.now() - (this.gitAt ?? 0) > 6000)) {
+          git = null;
+          this.gitCwd = cwd; this.gitAt = Date.now();
           const s = await exec("git", ["status", "--porcelain=2", "--branch"], { cwd, on, timeout: 2500 });
           if (s.code === 0) {
             const head = s.stdout.match(/^# branch\.head (.+)$/m)?.[1];
