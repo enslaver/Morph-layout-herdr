@@ -21,7 +21,7 @@ const MONO = "Geist Mono";
 const SANS = "Geist";
 // Personal settings (my-settings panel): rows shown here, history kept, whether closed agents are logged.
 const R = (k, d) => (shared("rice") ?? {})[k] ?? d;
-const SIDEBAR_ROWS = () => R("activity.rows", 6);
+const SIDEBAR_ROWS = () => R("activity.rows", 3);
 const KEEP = () => R("activity.keep", 200);
 const ROW = 24;
 const STATES = ["needs you", "working", "finished", "closed"];

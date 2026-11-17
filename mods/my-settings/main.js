@@ -26,7 +26,7 @@ const ICON = (name) => `mods/my-settings/${name}.svg`;
 const DEFAULTS = {
   "activity.keep": 200,
   "activity.kinds": ["needs you", "finished", "started", "closed"],
-  "activity.rows": 6,
+  "activity.rows": 3,
   "background.dim": 0,
   "background.fit": "cover",
   "background.gradient": ["#342d40", "#162a37", 145],
