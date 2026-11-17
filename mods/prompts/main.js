@@ -370,7 +370,7 @@ export default class Asks extends View {
       .child(div().px(14).py(7).flex_none().text_size(11.5).text_color(t.dim).child(`${pending.length} waiting · ${today} answered today`))
       .child(v_flex().id("asks-list").flex_1().min_h(0).overflow_y_scrollbar().px(8).pb(8).gap(8)
         .children(pending.map((a) => this.card(a, t, now)))
-        .when(pending.length === 0, (el) => el.child(div().p(10).text_size(12).text_color(t.dim).child(`No asks waiting in ${this.all ? "any space" : space?.name ?? "this space"}. Agents show up here when they stop to ask you something.`)))
+        .when(pending.length === 0, (el) => el.child(div().p(10).text_size(12).text_color(t.dim).child(`No prompts waiting in ${this.all ? "any space" : space?.name ?? "this space"}. Agents show up here when they stop to ask you something.`)))
         .when(done.length > 0, (el) => el.child(v_flex().w_full().gap(2).pt(6)
           .child(h_flex().id("asks-done").h(24).px(8).gap(6).items_center().text_size(11).font_medium().text_color(t.dim).cursor_pointer().hover((s) => s.text_color(t.foreground))
             .on_click((_e, cx) => { this.showAnswered = !this.showAnswered; cx.notify(); })

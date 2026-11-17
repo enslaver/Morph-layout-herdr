@@ -1,6 +1,6 @@
 {
   "place": "none",
-  "title": "Spaces (Asks)",
+  "title": "Spaces (Prompts)",
   "cloned_from": {
     "name": "spaces",
     "version": "0.1.13"

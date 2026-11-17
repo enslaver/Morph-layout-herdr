@@ -1,6 +1,6 @@
 # Morph-layout-herdr
 
-A Herdr layout: the Asks layout with the Answered tree. Every question your agents ask in a space
+A Herdr layout: the Prompts layout with the Answered tree. Every question your agents ask in a space
 shows in one panel, and "Answered" lists the last prompts you sent with the questions and answers
 that followed.
 
