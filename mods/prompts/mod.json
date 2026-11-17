@@ -1,1 +1,4 @@
-{ "place": "right", "size": 300, "title": "Last prompt" }
+{
+  "place": "none",
+  "title": "Prompts"
+}
