@@ -45,7 +45,12 @@ const DEFAULTS = {
   "transparency.cards": 100, "transparency.chrome": 80, "transparency.on": true, "transparency.panes": 100,
   "usage.claude": true, "usage.codex": true, "usage.minutes": 5, "usage.mode": "recent",
   "wallpaper.folder": "~/Pictures/Imgur Wallpapers",
+  "wallpaper.random": false, "wallpaper.minutes": 60,
 };
+
+// Shuffle intervals (minutes): the slider snaps to these. my-keys does the shuffling.
+const EVERY = [1, 5, 15, 30, 60, 180, 360, 720, 1440];
+const everyLabel = (m) => (m < 60 ? `${m}m` : `${m / 60}h`);
 
 const SECTIONS = [
   ["look", "Appearance", "palette", "Transparency, colours, corners and spacing"],
@@ -136,6 +141,8 @@ export default class MySettings extends View {
     mk("chrome", 30, 100, 1, c["transparency.chrome"], (v) => set({ "transparency.chrome": v, "transparency.on": true }));
     mk("panes", 30, 100, 1, c["transparency.panes"], (v) => set({ "transparency.panes": v, "transparency.on": true }));
     mk("cards", 30, 100, 1, c["transparency.cards"], (v) => set({ "transparency.cards": v, "transparency.on": true }));
+    mk("every", 0, EVERY.length - 1, 1, Math.max(0, EVERY.indexOf(c["wallpaper.minutes"])),
+      (v) => set({ "wallpaper.minutes": EVERY[Math.round(v)] }));
     mk("dim", 0, 85, 1, c["background.dim"], (v) => set({ "background.dim": v }));
     mk("gap", 0, 24, 1, c["look.gap"], (v) => set({ "look.gap": v }));
     mk("radius", 0, 20, 1, c["look.radius"], (v) => set({ "look.radius": v }));
@@ -402,6 +409,12 @@ export default class MySettings extends View {
               cx.notify();
             })))
             .child(this.button("wall-reload", "Refresh", "reset", (cx) => this.loadWalls(cx)))),
+        this.row("Shuffle", "Pick a random image from the folder on a timer.",
+          h_flex().gap(10).items_center()
+            .child(this.button("wall-shuffle", "Now", "reset", () => setShared("wallpaper.shuffle", Date.now())))
+            .child(this.toggle("wall-random", c["wallpaper.random"], () => set({ "wallpaper.random": !c["wallpaper.random"] })))),
+        this.row("Every", "How often Shuffle picks a new image.",
+          this.slider("every", (v) => everyLabel(EVERY[Math.round(v)]), !c["wallpaper.random"])),
         this.row("Dim", "Darkens the wallpaper (and gradients) behind everything.", this.slider("dim", (v) => `${Math.round(v)}%`)),
         this.row("Fit", "Fill crops the image to the window; Fit shows all of it.",
           this.seg("fit", [["cover", "Fill"], ["contain", "Fit"]], c["background.fit"], (v) => set({ "background.fit": v }))),

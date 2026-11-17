@@ -13,7 +13,7 @@ a live activity log of your prompts and agent replies, and a Go to screen on Cmd
   Claude Code usage (`claude-usage`), footer (`sleek-chrome`).
 - **Work column:** tabs (`sleek-tabs`), main terminal area, and a right panel with files (`sleek-files`)
   and changes (`sleek-changes`).
-- **Bottom:** status bar (`sleek-status`).
+- **Bottom:** agent bar (`agent-bar`): the focused Claude Code session's status line as clickable pills, and the status bar (`sleek-status`).
 - **Hidden:** `my-keys`, a zero-height block that applies the settings panel's changes to this layout.
 
 ## Mods
@@ -29,6 +29,8 @@ Used by the layout or key bindings:
 | `sleek-tabs` | Tab bar. |
 | `sleek-files`, `sleek-changes` | Files and changes panels. |
 | `sleek-status` | Status bar. |
+| `agent-bar` | The focused terminal as pills. Claude Code: model, effort, context, branch, changes, folder, output style, cost, 5h limit. pi: model, thinking, context, branch, changes, folder. zsh/bash: shell (start Claude or pi), branch, changes, folder. Hides for anything else. Clicks open `agent-bar-pick` (types `/model`, `/effort`… into the idle agent, or runs `git switch`). Claude needs `statusLine.command` set to `~/.config/herdr-app/mods/agent-bar/statusline.sh <your old command>`; pi needs `cp mods/agent-bar/pi-agent-bar.ts ~/.pi/agent/extensions/agent-bar.ts`. |
+| `agent-bar-pick` | Chooser popup for `agent-bar`. |
 | `sleek-pane` | Pane headers, applied by `my-keys`. |
 | `my-keys` | Applies look and key settings to the layout and `keys.json`; the New space dialog (Cmd+N). |
 | `my-settings` | Settings panel (Cmd+,): look, wallpaper, sidebar, usage, terminal, sounds, keys. Saves to `rice.json`. |
@@ -64,6 +66,7 @@ Prompts and replies reach the Activity log through `mods/sleek-activity/hook.py`
 - **Look, sidebar, usage, wallpaper:** the my-settings panel (Cmd+,), which writes `~/.config/herdr-app/rice.json`.
   - **Usage → Check every:** how often Claude usage is re-read, 1–60 minutes (default 5). Stored as `usage.minutes`.
   - **Wallpaper:** picking an image sets the image background; picking a gradient turns the image off.
+  - **Shuffle:** turn it on to change to a random image from the wallpaper folder every 1m, 5m, 15m, 30m, 1h, 3h, 6h, 12h or 24h (the Every slider). Now changes it right away. `my-keys` runs the timer.
 - **`~/.config/herdr-app/settings.json`:** `morph` holds this layout's keys, so herdr's own keys in the same file stay as they are.
   - `morph.usage_minutes`: fallback for the usage interval, used when `usage.minutes` isn't set.
   - `morph.prompts`: how many recent prompts the Prompts tree shows (default 10).
