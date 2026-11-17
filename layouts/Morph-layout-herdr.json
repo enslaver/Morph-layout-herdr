@@ -145,7 +145,7 @@
                       "id": "asks",
                       "type": "block",
                       "content": {
-                        "mod": "asks"
+                        "mod": "prompts"
                       }
                     }
                   ],
