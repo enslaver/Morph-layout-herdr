@@ -8,8 +8,8 @@ export { SCHEMA, normalize, parseScreen, parseReport, parseLastMessage, parseCla
 const MAX_CHECKED = 300;
 // The card shown when neither the Claude Code nor the Codex CLI is on the machine.
 export const NOTICE_ID = "notice:no-classifier";
-export const NOTICE_TEXT = "Asks reads plain-text questions with the Claude Code or Codex CLI, and neither is on this machine. Only those two agents are supported for now; dialogs still work. More agents are coming: ask for yours at github.com/sachin-philip/herdr-agent-ask/issues.";
-const noticeAsk = (now) => ({ id: NOTICE_ID, notice: true, address: null, pane: null, space: null, space_name: "", agent: "Asks", program: null, app: null, cwd: null, turn: 0, msg: "",
+export const NOTICE_TEXT = "Prompts reads plain-text questions with the Claude Code or Codex CLI, and neither is on this machine. Only those two agents are supported for now; dialogs still work. More agents are coming: ask for yours at github.com/sachin-philip/herdr-agent-ask/issues.";
+const noticeAsk = (now) => ({ id: NOTICE_ID, notice: true, address: null, pane: null, space: null, space_name: "", agent: "Prompts", program: null, app: null, cwd: null, turn: 0, msg: "",
   detected_at: now, state: "pending", kind: "NOTICE", question: NOTICE_TEXT, options: [], recommended: null, context: "", raw: "", source: "none", confidence: 1, enriched: true,
   answer: null, answered_at: null, error: null, note: null });
 const one = (s) => (s ?? "").replace(/\s+/g, " ").trim();

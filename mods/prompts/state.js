@@ -6,7 +6,7 @@ export const KEY = "asks.state";
 export const SCHEMA = 1;
 export const MAX_ASKS = 60;
 export const KEEP_MS = 24 * 3600 * 1000;
-export const DEFAULTS = { label: "Asks", toast: false, log: "~/.config/herdr-app/decisions/{space}.md", classify: "auto", classifier: "auto", model: "haiku", codex_model: "", trailing_questions: true, prompts: 10 };
+export const DEFAULTS = { label: "Prompts", toast: false, log: "~/.config/herdr-app/decisions/{space}.md", classify: "auto", classifier: "auto", model: "haiku", codex_model: "", trailing_questions: true, prompts: 10 };
 // toast is off: Herdr already posts "needs you" for a blocked agent; true adds a second toast with the question.
 
 // Claude Code's AskUserQuestion with several questions (a "wizard") draws a tab bar over the
