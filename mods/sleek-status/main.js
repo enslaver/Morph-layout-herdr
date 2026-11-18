@@ -50,7 +50,10 @@ export default class Status extends View {
           this.stats = JSON.parse(r.stdout);
         }
       } catch {}
-      cx.notify();
+      // Redraw when a shown number or the clock's minute changed.
+      const st = this.stats ?? {};
+      const shown = [Math.round(st.cpu), Math.round(st.mem), st.battery, st.charging, Math.floor(Date.now() / 60000)].join();
+      if (shown !== this.statsShown) { this.statsShown = shown; cx.notify(); }
     });
   }
 
@@ -85,14 +88,16 @@ export default class Status extends View {
       try {
         const running = async (name) => (await exec("pgrep", ["-x", name])).code === 0;
         const which = (await running("Spotify")) ? "spotify" : (await running("Music")) ? "music" : null;
-        if (!which) { this.np = null; cx.notify(); return; }
+        if (!which) { if (this.np) { this.np = null; cx.notify(); } return; }
         const r = await exec("osascript", [`${home()}/.config/herdr-app/mods/sleek-status/np-${which}.applescript`]);
         const [player, state, title, artist, pos, dur] = (r.code === 0 ? r.stdout.trim() : "").split("\t");
         this.np = player && state && state !== "stopped" && title
           ? { player, state, title, artist, pos: parseFloat(pos) || 0, dur: parseFloat(dur) || 0 }
           : null;
       } catch { this.np = null; }
-      cx.notify();
+      // Redraw only when it changed (a playing track's position still moves it).
+      const np = JSON.stringify(this.np);
+      if (np !== this.npShown) { this.npShown = np; cx.notify(); }
     });
   }
 

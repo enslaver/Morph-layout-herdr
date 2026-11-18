@@ -192,6 +192,22 @@
               "gap": 5
             },
             {
+              "id": "agent-bar",
+              "type": "block",
+              "content": {
+                "mod": "agent-bar"
+              },
+              "size": {
+                "px": 32
+              },
+              "background": "#16141fcc",
+              "radius": 10,
+              "border": {
+                "width": 1,
+                "color": "border"
+              }
+            },
+            {
               "id": "status",
               "type": "block",
               "content": {

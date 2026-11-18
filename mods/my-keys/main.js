@@ -16,9 +16,23 @@
 //   layouts/na29-islands.json the look: background, transparency, gaps, corners, borders, accent,
 //                         terminal font/size/padding, pane headers
 //   keys.json             prefix key, Ctrl+H/J/K/L, Cmd+N, Cmd+,
+//
+// It also shuffles the wallpaper: with "wallpaper.random" on, a random image from
+// "wallpaper.folder" every "wallpaper.minutes"; the panel's Now button bumps shared
+// "wallpaper.shuffle" for one right away.
 
 import { View, div } from "gpui-kit";
-import { appHome, focused, hc, nextCommand, openOverlay, readTextFile, run, setShared, shared, spaces, theme, writeTextFile } from "herdr";
+import { appHome, checking, exec, focused, hc, home, nextCommand, openOverlay, readTextFile, run, setShared, shared, spaces, theme, writeTextFile } from "herdr";
+
+const IMAGE = /\.(jpe?g|png|webp|heic|tiff?|bmp|gif)$/i;
+let PY = null;
+async function pillowPython() {
+  if (PY) return PY;
+  for (const p of ["/opt/homebrew/bin/python3", "/usr/local/bin/python3", "python3"]) {
+    try { if ((await exec(p, ["-I", "-c", "import PIL"])).code === 0) return (PY = p); } catch {}
+  }
+  return (PY = "python3");
+}
 
 const KEY = { left: "ctrl+h", down: "ctrl+j", up: "ctrl+k", right: "ctrl+l" };
 const LAYOUT = "Morph-layout-herdr";
@@ -181,6 +195,13 @@ export default class MyKeys extends View {
     this.loaded = false;
     this.applied = null;
     this.writing = false;
+    this.shuffleSeen = shared("wallpaper.shuffle") ?? 0;
+    this.shuffling = false;
+    cx.timer.every(20000, (cx) => {
+      const r = full();
+      const due = (shared("wallpaper.at") ?? 0) + (r["wallpaper.minutes"] ?? 60) * 60000;
+      if (r["wallpaper.random"] && Date.now() >= due) this.shuffle(cx);
+    });
     cx.spawn(async () => {
       for (;;) {
         const command = await nextCommand();
@@ -203,6 +224,34 @@ export default class MyKeys extends View {
       this.applied = { look: pick(r, LOOK) + themeSig(), keys: pick(r, KEYS), all: JSON.stringify(r) + themeSig() };
       this.loaded = true;
       cx.notify();
+    });
+  }
+
+  // A random image from the wallpaper folder (not the one showing) becomes the background.
+  shuffle(cx) {
+    if (this.shuffling || checking()) return;
+    this.shuffling = true;
+    setShared("wallpaper.at", Date.now());
+    cx.spawn(async () => {
+      try {
+        const r = full(), h = home();
+        const dir = (r["wallpaper.folder"] ?? "~/Pictures").replace(/^~(?=\/)/, h);
+        const ls = await exec("ls", [dir]);
+        const now = (r["background.source"] ?? "").replace(/^~(?=\/)/, h);
+        const files = ls.stdout.split("\n").filter((f) => IMAGE.test(f)).map((f) => `${dir}/${f}`);
+        const pool = files.length > 1 ? files.filter((f) => f !== now) : files;
+        if (pool.length) {
+          const src = pool[Math.floor(Math.random() * pool.length)];
+          const app = appHome();
+          const u = await exec(await pillowPython(), ["-I", `${app}/mods/my-settings/wallpaper.py`, "use", src, `${app}/backgrounds`]);
+          const out = u.stdout.trim();
+          if (u.code === 0 && out) setShared("rice", { ...full(), "background.kind": "image",
+            "background.image": out.startsWith(app + "/") ? out.slice(app.length + 1) : out,
+            "background.source": src.startsWith(h + "/") ? "~" + src.slice(h.length) : src });
+          else console.log(`my-keys: wallpaper shuffle: ${u.stderr.trim()}`);
+        }
+      } catch (e) { console.log(`my-keys: wallpaper shuffle: ${e}`); }
+      this.shuffling = false;
     });
   }
 
@@ -230,6 +279,8 @@ export default class MyKeys extends View {
   }
 
   render(cx) {
+    const bump = shared("wallpaper.shuffle") ?? 0;
+    if (bump !== this.shuffleSeen) { this.shuffleSeen = bump; this.shuffle(cx); }
     this.sync(cx);
     return div();
   }
