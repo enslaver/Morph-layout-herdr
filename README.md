@@ -61,6 +61,19 @@ Prompts and replies reach the Activity log through `mods/sleek-activity/hook.py`
 4. Merge `keys.json` into yours.
 5. Switch to the layout with `ctrl-shift-l`.
 
+### Platforms
+
+Works on macOS and Windows (Linux is best effort). You need `python3` on `PATH`; on Windows also Git for Windows, so `bash` exists for the agent-bar status-line script.
+
+| Feature | macOS | Windows / Linux |
+|---|---|---|
+| CPU, memory, battery (`sleek-status`) | `ps`, `vm_stat`, `pmset` | Win32 API / `/proc` via `stats.py` |
+| Claude plan limits (`claude-usage`) | token from the Keychain | token from `~/.claude/.credentials.json` (or `$CLAUDE_CONFIG_DIR`) |
+| Now playing (Spotify / Music) | yes | not available, the module stays hidden |
+| Wispr Flow stats | yes | not available, the module stays hidden |
+
+Set `statusLine.command` in `~/.claude/settings.json` to `bash ~/.config/herdr-app/mods/agent-bar/statusline.sh <your old command>`; without it the agent bar has no data.
+
 ## Settings
 
 - **Look, sidebar, usage, wallpaper:** the my-settings panel (Cmd+,), which writes `~/.config/herdr-app/rice.json`.

@@ -113,8 +113,13 @@ def plan_limits():
         pass
     try:
         import subprocess, urllib.request
-        raw = subprocess.run(["security", "find-generic-password", "-s", "Claude Code-credentials", "-w"],
-                             capture_output=True, text=True, timeout=10, check=True).stdout
+        if sys.platform == "darwin":
+            raw = subprocess.run(["security", "find-generic-password", "-s", "Claude Code-credentials", "-w"],
+                                 capture_output=True, text=True, timeout=10, check=True).stdout
+        else:  # Windows and Linux: Claude Code keeps the same JSON in a file
+            cfg = os.environ.get("CLAUDE_CONFIG_DIR") or CLAUDE
+            with open(os.path.join(cfg, ".credentials.json"), encoding="utf-8") as f:
+                raw = f.read()
         token = json.loads(raw)["claudeAiOauth"]["accessToken"]
         req = urllib.request.Request("https://api.anthropic.com/api/oauth/usage", headers={
             "Authorization": "Bearer " + token, "anthropic-beta": "oauth-2025-04-20"})
