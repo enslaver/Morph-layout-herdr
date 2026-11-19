@@ -10,4 +10,5 @@ if [ -n "${HC_TERMINAL_ID:-}" ]; then
   printf '%s' "$in" > "$d/.$HC_TERMINAL_ID.tmp" && mv -f "$d/.$HC_TERMINAL_ID.tmp" "$d/$HC_TERMINAL_ID.json"
 fi
 [ $# -eq 0 ] && set -- ccstatusline
+command -v "$1" >/dev/null 2>&1 || exit 0   # wrapped command not installed: save the JSON, print nothing
 printf '%s' "$in" | exec "$@"

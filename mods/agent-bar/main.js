@@ -60,11 +60,14 @@ export default class AgentBar extends View {
     this.home = home();
     this.styles = STYLES;
     cx.spawn(async (cx) => {
-      const r = await exec("ls", [this.home + "/.claude/output-styles"]);
-      if (r.code === 0) {
-        const extra = r.stdout.split("\n").filter((f) => f.endsWith(".md")).map((f) => f.slice(0, -3));
-        this.styles = [...STYLES, ...extra.filter((s) => !STYLES.includes(s))];
-      }
+      try {
+        // python3 instead of ls so it also works on Windows
+        const r = await exec("python3", ["-I", "-c", "import os,sys\nprint('\\n'.join(os.listdir(sys.argv[1])))", this.home + "/.claude/output-styles"]);
+        if (r.code === 0) {
+          const extra = r.stdout.split(/\r?\n/).filter((f) => f.endsWith(".md")).map((f) => f.slice(0, -3));
+          this.styles = [...STYLES, ...extra.filter((s) => !STYLES.includes(s))];
+        }
+      } catch {}
     });
     this.refresh(cx);
     cx.timer.every(1500, (cx) => this.refresh(cx));
